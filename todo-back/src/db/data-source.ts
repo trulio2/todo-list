@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions } from 'typeorm'
+import { DataSourceOptions } from 'typeorm'
 import { config } from 'dotenv'
 import { Task } from '../task/entities'
 
@@ -9,9 +9,4 @@ export const dataSourceOptions: DataSourceOptions = {
   url: process.env.MONGO_URL,
   entities: [Task],
   synchronize: true,
-  migrations: ['./dist/db/migrations/*.js'],
 }
-
-const dataSource = new DataSource(dataSourceOptions)
-
-export default dataSource

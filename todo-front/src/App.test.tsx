@@ -1,7 +1,7 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import App from './App'
 import { GET_TASKS } from './graphql/queries'
-import { MockedProvider } from '@apollo/client/testing'
 
 describe('App Component', () => {
   const getTasksMock = {

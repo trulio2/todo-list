@@ -1,8 +1,8 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import CreateTaskModal from './CreateTaskModal'
-import { MockedProvider } from '@apollo/client/testing'
 import { CREATE_TASK } from '../../graphql/queries/create-task'
+import CreateTaskModal from './CreateTaskModal'
 
 describe('CreateTaskModal', () => {
   const mockCloseModal = jest.fn()

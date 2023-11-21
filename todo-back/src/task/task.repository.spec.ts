@@ -70,6 +70,9 @@ describe('TaskRepository', () => {
 
       expect(result).toEqual([mockTask, mockDoneTask, mockHideTask])
       expect(mockTypeOrmRepository.find).toHaveBeenCalledWith({
+        order: {
+          duedate: 'ASC',
+        },
         where: {
           description: {
             $regex: mockGetTasksFilterInput.description,

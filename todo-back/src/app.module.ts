@@ -10,7 +10,6 @@ import { TaskModule } from './task'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
       validationSchema: configValidationSchema,
     }),
@@ -28,8 +27,8 @@ import { TaskModule } from './task'
         }
       },
     }),
-    TypeOrmModule.forRoot(dataSourceOptions),
     TaskModule,
+    TypeOrmModule.forRoot(dataSourceOptions),
   ],
   controllers: [],
   providers: [],

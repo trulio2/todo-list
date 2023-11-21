@@ -1,9 +1,9 @@
 import { ParseUUIDPipe } from '@nestjs/common'
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql'
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
+import { Task } from './entities'
 import { TaskService } from './task.service'
 import { RemoveTaskType, TaskType } from './types'
-import { Task } from './entities'
 
 @Resolver(() => TaskType)
 export class TaskResolver {

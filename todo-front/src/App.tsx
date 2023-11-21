@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { GET_TASKS } from './graphql/queries'
-import './App.css'
 import CreateTaskModal from './components/create-task-modal/CreateTaskModal'
 import TaskModal from './components/task-modal/TaskModal'
-import { Task } from './types/task'
+import { GET_TASKS } from './graphql/queries'
+import { Task } from './types'
+import './App.css'
 
 function App() {
   const [description, setDescription] = useState('')

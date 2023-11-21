@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   DONE_TASK,
@@ -5,7 +6,6 @@ import {
   REMOVE_TASK,
   UPDATE_TASK,
 } from '../../graphql/queries'
-import { MockedProvider } from '@apollo/client/testing'
 import TaskModal from './TaskModal'
 
 describe('TaskModal', () => {
