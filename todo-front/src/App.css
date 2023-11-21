@@ -1,0 +1,65 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  padding: 20px;
+  color: white;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-field {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  flex-grow: 1;
+  margin-right: 20px;
+  max-width: 20%;
+}
+
+.new-task-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.new-task-btn:hover {
+  background-color: #45a049;
+}
+
+.tasks-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.task-container {
+  background-color: #444;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-width: 200px;
+}
+
+.task-container:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.task-detail {
+  margin-bottom: 10px;
+}
