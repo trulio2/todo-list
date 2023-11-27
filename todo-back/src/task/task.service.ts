@@ -34,6 +34,8 @@ export class TaskService {
   async done(id: string): Promise<Task> {
     const task = await this.findOne(id)
 
+    console.log(task)
+
     return this.repository.done(id, task)
   }
 

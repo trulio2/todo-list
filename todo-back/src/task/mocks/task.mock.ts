@@ -1,7 +1,7 @@
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from '../dto'
 import { Task } from '../schemas'
 
-export const mockId = 'uuid'
+export const mockId = 'objectId'
 
 export const mockTask: Task = {
   description: 'description',

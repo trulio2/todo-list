@@ -101,8 +101,10 @@ describe('TaskService', () => {
 
       const result = await service.done(mockId)
 
+      console.log(result, doneTask)
+
       expect(result).toEqual(doneTask)
-      expect(mockRepository.done).toHaveBeenCalledWith(mockTask)
+      expect(mockRepository.done).toHaveBeenCalledWith(mockId, mockTask)
     })
 
     it('should throw an error if task is not found', async () => {
@@ -119,7 +121,7 @@ describe('TaskService', () => {
       const result = await service.hide(mockId)
 
       expect(result).toEqual(hideTask)
-      expect(mockRepository.hide).toHaveBeenCalledWith(mockDoneTask)
+      expect(mockRepository.hide).toHaveBeenCalledWith(mockId, mockDoneTask)
     })
 
     it('should throw an error if task is not found', async () => {
@@ -158,6 +160,7 @@ describe('TaskService', () => {
 
       expect(result).toEqual(mockTask)
       expect(mockRepository.update).toHaveBeenCalledWith(
+        mockId,
         mockTask,
         mockUpdateTaskInput,
       )

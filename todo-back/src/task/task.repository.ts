@@ -29,7 +29,7 @@ export class TaskRepository {
   async create(createTaskInput: CreateTaskInput): Promise<Task> {
     const { description, duedate } = createTaskInput
 
-    const newTask = new this.taskModel({
+    const newTask = await this.taskModel.create({
       description,
       duedate: new Date(duedate).toISOString(),
       done: false,
