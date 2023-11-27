@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
-import { Task } from './entities'
+import { Task } from './schemas'
 import { TaskRepository } from './task.repository'
 
 @Injectable()
@@ -34,7 +34,7 @@ export class TaskService {
   async done(id: string): Promise<Task> {
     const task = await this.findOne(id)
 
-    return this.repository.done(task)
+    return this.repository.done(id, task)
   }
 
   async hide(id: string): Promise<Task> {
@@ -42,7 +42,7 @@ export class TaskService {
 
     if (!task.done) throw new BadRequestException('Task is not done')
 
-    return this.repository.hide(task)
+    return this.repository.hide(id, task)
   }
 
   async remove(id: string): Promise<Task> {
@@ -54,6 +54,6 @@ export class TaskService {
   async update(id: string, updateTaskInput: UpdateTaskInput): Promise<Task> {
     const task = await this.findOne(id)
 
-    return this.repository.update(task, updateTaskInput)
+    return this.repository.update(id, task, updateTaskInput)
   }
 }

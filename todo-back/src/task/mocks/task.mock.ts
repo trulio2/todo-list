@@ -1,11 +1,9 @@
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from '../dto'
-import { Task } from '../entities'
+import { Task } from '../schemas'
 
 export const mockId = 'uuid'
 
 export const mockTask: Task = {
-  _id: 'objectId',
-  id: 'uuid',
   description: 'description',
   duedate: new Date().toISOString(),
   done: false,
@@ -13,8 +11,6 @@ export const mockTask: Task = {
 }
 
 export const mockDoneTask: Task = {
-  _id: 'objectId',
-  id: 'uuid',
   description: 'description',
   duedate: new Date().toISOString(),
   done: true,
@@ -22,8 +18,6 @@ export const mockDoneTask: Task = {
 }
 
 export const mockHideTask: Task = {
-  _id: 'objectId',
-  id: 'uuid',
   description: 'description',
   duedate: new Date().toISOString(),
   done: true,

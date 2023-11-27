@@ -1,7 +1,7 @@
+import { getModelToken } from '@nestjs/mongoose'
 import { Test, TestingModule } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { Task } from './entities'
+import { Model } from 'mongoose'
+import { Task, TaskDocument } from './schemas'
 import {
   mockCreateTaskInput,
   mockDoneTask,
@@ -15,14 +15,14 @@ import { TaskRepository } from './task.repository'
 
 describe('TaskRepository', () => {
   let repository: TaskRepository
-  let mockTypeOrmRepository: Repository<Task>
+  let mockTaskModel: Model<TaskDocument>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskRepository,
         {
-          provide: getRepositoryToken(Task),
+          provide: getModelToken(Task.name),
           useFactory: () => ({
             create: jest.fn(),
             find: jest.fn(),
@@ -35,9 +35,7 @@ describe('TaskRepository', () => {
     }).compile()
 
     repository = module.get<TaskRepository>(TaskRepository)
-    mockTypeOrmRepository = module.get<Repository<Task>>(
-      getRepositoryToken(Task),
-    )
+    mockTaskModel = module.get<Model<TaskDocument>>(getModelToken(Task.name))
   })
 
   it('should be defined', () => {
@@ -45,31 +43,31 @@ describe('TaskRepository', () => {
   })
 
   it('should be defined', () => {
-    expect(mockTypeOrmRepository).toBeDefined()
+    expect(mockTaskModel).toBeDefined()
   })
 
   describe('create', () => {
     it('should create a task', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'create').mockReturnValue(mockTask)
-      jest.spyOn(mockTypeOrmRepository, 'save').mockResolvedValue(mockTask)
+      jest.spyOn(mockTaskModel, 'create').mockReturnValue(mockTask)
+      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockTask)
 
       const result = await repository.create(mockCreateTaskInput)
 
       expect(result).toEqual(mockTask)
-      expect(mockTypeOrmRepository.save).toHaveBeenCalledWith(result)
+      expect(mockTaskModel.save).toHaveBeenCalledWith(result)
     })
   })
 
   describe('findAll', () => {
     it('should find all tasks, with filter', async () => {
       jest
-        .spyOn(mockTypeOrmRepository, 'find')
+        .spyOn(mockTaskModel, 'find')
         .mockResolvedValue([mockTask, mockDoneTask, mockHideTask])
 
       const result = await repository.findAll(mockGetTasksFilterInput)
 
       expect(result).toEqual([mockTask, mockDoneTask, mockHideTask])
-      expect(mockTypeOrmRepository.find).toHaveBeenCalledWith({
+      expect(mockTaskModel.find).toHaveBeenCalledWith({
         order: {
           duedate: 'ASC',
         },
@@ -86,12 +84,12 @@ describe('TaskRepository', () => {
 
   describe('findOne', () => {
     it('should find one task by id', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'findOneBy').mockResolvedValue(mockTask)
+      jest.spyOn(mockTaskModel, 'findOneBy').mockResolvedValue(mockTask)
 
       const result = await repository.findOne(mockId)
 
       expect(result).toEqual(mockTask)
-      expect(mockTypeOrmRepository.findOneBy).toHaveBeenCalledWith({
+      expect(mockTaskModel.findOneBy).toHaveBeenCalledWith({
         id: mockId,
       })
     })
@@ -99,40 +97,40 @@ describe('TaskRepository', () => {
 
   describe('done', () => {
     it('should set done a task', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'save').mockResolvedValue(mockDoneTask)
+      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockDoneTask)
 
       const result = await repository.done(mockTask)
 
       expect(result).toEqual(mockDoneTask)
-      expect(mockTypeOrmRepository.save).toHaveBeenCalledWith(mockDoneTask)
+      expect(mockTaskModel.save).toHaveBeenCalledWith(mockDoneTask)
     })
   })
 
   describe('hide', () => {
     it('should set hide a task', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'save').mockResolvedValue(mockHideTask)
+      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockHideTask)
 
       const result = await repository.hide(mockTask)
 
       expect(result).toEqual(mockHideTask)
-      expect(mockTypeOrmRepository.save).toHaveBeenCalledWith(mockHideTask)
+      expect(mockTaskModel.save).toHaveBeenCalledWith(mockHideTask)
     })
   })
 
   describe('remove', () => {
     it('should remove a task', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'remove').mockResolvedValue(mockTask)
+      jest.spyOn(mockTaskModel, 'remove').mockResolvedValue(mockTask)
 
       const result = await repository.remove(mockTask)
 
       expect(result).toEqual(mockTask)
-      expect(mockTypeOrmRepository.remove).toHaveBeenCalledWith(mockTask)
+      expect(mockTaskModel.remove).toHaveBeenCalledWith(mockTask)
     })
   })
 
   describe('update', () => {
     it('should update a task', async () => {
-      jest.spyOn(mockTypeOrmRepository, 'save').mockResolvedValue(mockTask)
+      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockTask)
       const updatedTask = {
         ...mockTask,
         ...mockUpdateTaskInput,
@@ -142,7 +140,7 @@ describe('TaskRepository', () => {
       const result = await repository.update(mockTask, mockUpdateTaskInput)
 
       expect(result).toEqual(updatedTask)
-      expect(mockTypeOrmRepository.save).toHaveBeenCalledWith(updatedTask)
+      expect(mockTaskModel.save).toHaveBeenCalledWith(updatedTask)
     })
   })
 })

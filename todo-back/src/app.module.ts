@@ -1,11 +1,10 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
-import { TypeOrmModule } from '@nestjs/typeorm'
 import { configValidationSchema } from './config'
-import { dataSourceOptions } from './db/data-source'
 import { TaskModule } from './task'
+import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
   imports: [
@@ -27,10 +26,15 @@ import { TaskModule } from './task'
         }
       },
     }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        dbName: configService.get<string>('MONGO_DB_NAME'),
+        uri: configService.get<string>('MONGO_URL'),
+      }),
+      inject: [ConfigService],
+    }),
     TaskModule,
-    TypeOrmModule.forRoot(dataSourceOptions),
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

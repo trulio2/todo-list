@@ -1,7 +1,7 @@
-import { ParseUUIDPipe } from '@nestjs/common'
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql'
+import { ParseObjectIdPipe } from '../pipes'
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
-import { Task } from './entities'
+import { Task } from './schemas'
 import { TaskService } from './task.service'
 import { RemoveTaskType, TaskType } from './types'
 
@@ -18,12 +18,12 @@ export class TaskResolver {
   }
 
   @Mutation(() => TaskType)
-  async done(@Args('id', ParseUUIDPipe) id: string): Promise<Task> {
+  async done(@Args('id', ParseObjectIdPipe) id: string): Promise<Task> {
     return this.taskService.done(id)
   }
 
   @Mutation(() => TaskType)
-  async hide(@Args('id', ParseUUIDPipe) id: string): Promise<Task> {
+  async hide(@Args('id', ParseObjectIdPipe) id: string): Promise<Task> {
     return this.taskService.hide(id)
   }
 
@@ -35,12 +35,13 @@ export class TaskResolver {
   }
 
   @Mutation(() => RemoveTaskType)
-  remove(@Args('id', ParseUUIDPipe) id: string): Promise<Task> {
+  remove(@Args('id', ParseObjectIdPipe) id: string): Promise<Task> {
     return this.taskService.remove(id)
   }
+
   @Mutation(() => TaskType)
   update(
-    @Args('id', ParseUUIDPipe) id: string,
+    @Args('id', ParseObjectIdPipe) id: string,
     @Args('updateTaskInput') updateTaskInput: UpdateTaskInput,
   ): Promise<Task> {
     return this.taskService.update(id, updateTaskInput)

@@ -1,76 +1,93 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { v4 as uuid } from 'uuid'
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
-import { Task } from './entities'
+import { Task } from './schemas'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
 
 @Injectable()
 export class TaskRepository {
-  constructor(
-    @InjectRepository(Task)
-    private taskRepository: Repository<Task>,
-  ) {}
+  constructor(@InjectModel(Task.name) private taskModel: Model<Task>) {}
 
   async findAll(getTasksFilterInput: GetTasksFilterInput): Promise<Task[]> {
     const { description, hide } = getTasksFilterInput
 
-    let query = {}
+    const filter = {}
 
     if (description) {
-      query = {
-        description: { $regex: description, $options: 'i' },
-      }
+      filter['description'] = new RegExp(description, 'i')
     }
-    query = { ...query, hide: hide ?? false }
 
-    return this.taskRepository.find({
-      where: query,
-      order: {
-        duedate: 'ASC',
-      },
-    })
+    filter['hide'] = hide ?? false
+
+    return this.taskModel.find(filter).exec()
   }
 
-  findOne(id: string): Promise<Task> {
-    return this.taskRepository.findOneBy({ id })
+  async findOne(id: string): Promise<Task> {
+    return this.taskModel.findById(id).exec()
   }
 
-  create(createTaskInput: CreateTaskInput): Promise<Task> {
+  async create(createTaskInput: CreateTaskInput): Promise<Task> {
     const { description, duedate } = createTaskInput
 
-    const task = this.taskRepository.create({
-      id: uuid(),
+    const newTask = new this.taskModel({
       description,
       duedate: new Date(duedate).toISOString(),
       done: false,
       hide: false,
     })
 
-    return this.taskRepository.save(task)
+    return newTask.save()
   }
 
-  done(task: Task): Promise<Task> {
+  async done(id: string, task: Task): Promise<Task> {
     task.done = true
 
-    return this.taskRepository.save(task)
+    await this.taskModel
+      .updateOne({ _id: id }, { $set: { done: task.done } })
+      .exec()
+
+    return task
   }
 
-  hide(task: Task): Promise<Task> {
+  async hide(id: string, task: Task): Promise<Task> {
     task.hide = true
 
-    return this.taskRepository.save(task)
+    await this.taskModel
+      .updateOne({ _id: id }, { $set: { hide: task.hide } })
+      .exec()
+
+    return task
   }
 
-  remove(task: Task): Promise<Task> {
-    return this.taskRepository.remove(task)
+  async remove(task: Task): Promise<Task> {
+    return this.taskModel
+      .deleteOne(task)
+      .exec()
+      .then(() => task)
   }
-  update(task: Task, updateTaskInput: UpdateTaskInput): Promise<Task> {
+
+  async update(
+    id: string,
+    task: Task,
+    updateTaskInput: UpdateTaskInput,
+  ): Promise<Task> {
     const { description, duedate } = updateTaskInput
 
     task.description = description
     task.duedate = new Date(duedate).toISOString()
 
-    return this.taskRepository.save(task)
+    await this.taskModel
+      .updateOne(
+        { _id: id },
+        {
+          $set: {
+            description: task.description,
+            duedate: task.duedate,
+          },
+        },
+      )
+      .exec()
+
+    return task
   }
 }
