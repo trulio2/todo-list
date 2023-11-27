@@ -1,25 +1,32 @@
 import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from '../dto'
 import { Task } from '../schemas'
 
+class ExtendedTask extends Task {
+  _id: string
+}
+
 export const mockId = 'objectId'
 
-export const mockTask: Task = {
+export const mockTask: ExtendedTask = {
+  _id: mockId,
   description: 'description',
-  duedate: new Date().toISOString(),
+  duedate: new Date('2023-01-01').toISOString(),
   done: false,
   hide: false,
 }
 
-export const mockDoneTask: Task = {
+export const mockDoneTask: ExtendedTask = {
+  _id: mockId,
   description: 'description',
-  duedate: new Date().toISOString(),
+  duedate: new Date('2023-01-01').toISOString(),
   done: true,
   hide: false,
 }
 
-export const mockHideTask: Task = {
+export const mockHideTask: ExtendedTask = {
+  _id: mockId,
   description: 'description',
-  duedate: new Date().toISOString(),
+  duedate: new Date('2023-01-01').toISOString(),
   done: true,
   hide: true,
 }

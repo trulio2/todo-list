@@ -19,7 +19,7 @@ export class TaskRepository {
 
     filter['hide'] = hide ?? false
 
-    return this.taskModel.find(filter).exec()
+    return this.taskModel.find(filter).sort({ duedate: 1 }).exec()
   }
 
   async findOne(id: string): Promise<Task> {
@@ -60,10 +60,9 @@ export class TaskRepository {
   }
 
   async remove(task: Task): Promise<Task> {
-    return this.taskModel
-      .deleteOne(task)
-      .exec()
-      .then(() => task)
+    await this.taskModel.deleteOne(task).exec()
+
+    return task
   }
 
   async update(

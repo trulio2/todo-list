@@ -4,9 +4,7 @@ import { Model } from 'mongoose'
 import { Task, TaskDocument } from './schemas'
 import {
   mockCreateTaskInput,
-  mockDoneTask,
   mockGetTasksFilterInput,
-  mockHideTask,
   mockId,
   mockTask,
   mockUpdateTaskInput,
@@ -24,11 +22,24 @@ describe('TaskRepository', () => {
         {
           provide: getModelToken(Task.name),
           useFactory: () => ({
-            create: jest.fn(),
-            find: jest.fn(),
-            findOneBy: jest.fn(),
-            remove: jest.fn(),
-            save: jest.fn(),
+            create: jest.fn().mockResolvedValue({
+              ...mockTask,
+              save: jest.fn().mockResolvedValue(mockTask),
+            }),
+            find: jest.fn().mockReturnValue({
+              sort: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue([mockTask]),
+              }),
+            }),
+            findById: jest.fn().mockReturnValue({
+              exec: jest.fn().mockResolvedValue(mockTask),
+            }),
+            updateOne: jest.fn().mockReturnValue({
+              exec: jest.fn(),
+            }),
+            deleteOne: jest.fn().mockReturnValue({
+              exec: jest.fn().mockResolvedValue(mockTask),
+            }),
           }),
         },
       ],
@@ -48,99 +59,93 @@ describe('TaskRepository', () => {
 
   describe('create', () => {
     it('should create a task', async () => {
-      jest.spyOn(mockTaskModel, 'create').mockReturnValue(mockTask)
-      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockTask)
-
       const result = await repository.create(mockCreateTaskInput)
 
       expect(result).toEqual(mockTask)
-      expect(mockTaskModel.save).toHaveBeenCalledWith(result)
+      expect(mockTaskModel.create).toHaveBeenCalledWith({
+        description: mockCreateTaskInput.description,
+        duedate: new Date(mockCreateTaskInput.duedate).toISOString(),
+        done: false,
+        hide: false,
+      })
     })
   })
 
   describe('findAll', () => {
     it('should find all tasks, with filter', async () => {
-      jest
-        .spyOn(mockTaskModel, 'find')
-        .mockResolvedValue([mockTask, mockDoneTask, mockHideTask])
-
       const result = await repository.findAll(mockGetTasksFilterInput)
 
-      expect(result).toEqual([mockTask, mockDoneTask, mockHideTask])
+      expect(result).toEqual([mockTask])
       expect(mockTaskModel.find).toHaveBeenCalledWith({
-        order: {
-          duedate: 'ASC',
-        },
-        where: {
-          description: {
-            $regex: mockGetTasksFilterInput.description,
-            $options: 'i',
-          },
-          hide: mockGetTasksFilterInput.hide,
-        },
+        description: new RegExp(mockGetTasksFilterInput.description, 'i'),
+        hide: mockGetTasksFilterInput.hide ?? false,
       })
     })
   })
 
   describe('findOne', () => {
     it('should find one task by id', async () => {
-      jest.spyOn(mockTaskModel, 'findOneBy').mockResolvedValue(mockTask)
-
       const result = await repository.findOne(mockId)
 
       expect(result).toEqual(mockTask)
-      expect(mockTaskModel.findOneBy).toHaveBeenCalledWith({
-        id: mockId,
-      })
+      expect(mockTaskModel.findById).toHaveBeenCalledWith(mockId)
     })
   })
 
   describe('done', () => {
-    it('should set done a task', async () => {
-      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockDoneTask)
+    it('should set a task as done', async () => {
+      const result = await repository.done(mockId, { ...mockTask })
 
-      const result = await repository.done(mockTask)
-
-      expect(result).toEqual(mockDoneTask)
-      expect(mockTaskModel.save).toHaveBeenCalledWith(mockDoneTask)
+      expect(result.done).toBeTruthy()
+      expect(mockTaskModel.updateOne).toHaveBeenCalledWith(
+        { _id: mockId },
+        { $set: { done: true } },
+      )
     })
   })
 
   describe('hide', () => {
-    it('should set hide a task', async () => {
-      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockHideTask)
+    it('should set a task as hidden', async () => {
+      const result = await repository.hide(mockId, { ...mockTask })
 
-      const result = await repository.hide(mockTask)
-
-      expect(result).toEqual(mockHideTask)
-      expect(mockTaskModel.save).toHaveBeenCalledWith(mockHideTask)
+      expect(result.hide).toBeTruthy()
+      expect(mockTaskModel.updateOne).toHaveBeenCalledWith(
+        { _id: mockId },
+        { $set: { hide: true } },
+      )
     })
   })
 
   describe('remove', () => {
     it('should remove a task', async () => {
-      jest.spyOn(mockTaskModel, 'remove').mockResolvedValue(mockTask)
-
       const result = await repository.remove(mockTask)
 
       expect(result).toEqual(mockTask)
-      expect(mockTaskModel.remove).toHaveBeenCalledWith(mockTask)
+      expect(mockTaskModel.deleteOne).toHaveBeenCalledWith(mockTask)
     })
   })
 
   describe('update', () => {
     it('should update a task', async () => {
-      jest.spyOn(mockTaskModel, 'save').mockResolvedValue(mockTask)
-      const updatedTask = {
+      const result = await repository.update(
+        mockId,
+        { ...mockTask },
+        mockUpdateTaskInput,
+      )
+      expect(result).toEqual({
         ...mockTask,
-        ...mockUpdateTaskInput,
+        description: mockUpdateTaskInput.description,
         duedate: new Date(mockUpdateTaskInput.duedate).toISOString(),
-      }
-
-      const result = await repository.update(mockTask, mockUpdateTaskInput)
-
-      expect(result).toEqual(updatedTask)
-      expect(mockTaskModel.save).toHaveBeenCalledWith(updatedTask)
+      })
+      expect(mockTaskModel.updateOne).toHaveBeenCalledWith(
+        { _id: mockId },
+        {
+          $set: {
+            description: mockUpdateTaskInput.description,
+            duedate: new Date(mockUpdateTaskInput.duedate).toISOString(),
+          },
+        },
+      )
     })
   })
 })

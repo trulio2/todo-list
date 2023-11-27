@@ -101,8 +101,6 @@ describe('TaskService', () => {
 
       const result = await service.done(mockId)
 
-      console.log(result, doneTask)
-
       expect(result).toEqual(doneTask)
       expect(mockRepository.done).toHaveBeenCalledWith(mockId, mockTask)
     })
