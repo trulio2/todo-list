@@ -1,7 +1,6 @@
 import { getModelToken } from '@nestjs/mongoose'
 import { Test, TestingModule } from '@nestjs/testing'
 import { Model } from 'mongoose'
-import { Task, TaskDocument } from './schemas'
 import {
   mockCreateTaskInput,
   mockGetTasksFilterInput,
@@ -9,6 +8,7 @@ import {
   mockTask,
   mockUpdateTaskInput,
 } from './mocks'
+import { Task, TaskDocument } from './schemas'
 import { TaskRepository } from './task.repository'
 
 describe('TaskRepository', () => {
@@ -132,6 +132,7 @@ describe('TaskRepository', () => {
         { ...mockTask },
         mockUpdateTaskInput,
       )
+      
       expect(result).toEqual({
         ...mockTask,
         description: mockUpdateTaskInput.description,

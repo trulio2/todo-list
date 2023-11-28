@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
-import { Task } from './schemas'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { CreateTaskInput, GetTasksFilterInput, UpdateTaskInput } from './dto'
+import { Task } from './schemas'
 
 @Injectable()
 export class TaskRepository {

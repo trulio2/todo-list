@@ -2,9 +2,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
+import { MongooseModule } from '@nestjs/mongoose'
 import { configValidationSchema } from './config'
 import { TaskModule } from './task'
-import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
   imports: [
